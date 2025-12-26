@@ -1,12 +1,11 @@
-from django.contrib.gis.geos import Point
+"""
+WSGI config for geo_points_project project.
+"""
 
+import os
 
-def create_gis_point(latitude: float, longitude: float) -> Point:
-    """
-    Вспомогательная функция для создания объекта Point из GeoDjango.
+from django.core.wsgi import get_wsgi_application
 
-    :param latitude: Широта.
-    :param longitude: Долгота.
-    :return: Готовый объект Point с SRID 4326.
-    """
-    return Point(x=longitude, y=latitude, srid=4326)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geo_points_project.settings.development')
+
+application = get_wsgi_application()

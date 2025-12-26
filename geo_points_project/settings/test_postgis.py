@@ -4,17 +4,16 @@ import os
 from decouple import config
 
 DEBUG = True
-
 ALLOWED_HOSTS = ["*"]
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': config('DEV_DB_NAME', default='geo_points_dev_db'),
-        'USER': config('DEV_DB_USER', default='postgres'),
-        'PASSWORD': config('DEV_DB_PASSWORD', default='Ser19052001'),
-        'HOST': config('DEV_DB_HOST', default='localhost'),
-        'PORT': config('DEV_DB_PORT', default='5432'),
+        'NAME': config('TEST_DB_NAME', default='geo_points_test_db'),
+        'USER': config('TEST_DB_USER', default='postgres'),
+        'PASSWORD': config('TEST_DB_PASSWORD', default='Ser19052001'),
+        'HOST': config('TEST_DB_HOST', default='localhost'),
+        'PORT': config('TEST_DB_PORT', default='5432'),
     }
 }
 
@@ -31,7 +30,7 @@ LOGGING = {
     'loggers': {
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'ERROR',
         },
     },
 }

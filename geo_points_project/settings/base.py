@@ -15,7 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_gis',
-    'points_app.apps.PointsAppConfig',
+    'points_app.apps.GeoApiConfig', # --- ИЗМЕНЕНО: на GeoApiConfig ---
 ]
 
 MIDDLEWARE = [
@@ -51,12 +51,12 @@ WSGI_APPLICATION = 'geo_points_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': config('DB_NAME', default='geo_points_db'),
-        'USER': config('DB_USER', default='user'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis', # --- ИЗМЕНЕНО: на PostGIS ---
+        'NAME': config('DB_NAME', default='geo_points_db'), # --- МОЖЕТ БЫТЬ УДАЛЕНО ---
+        'USER': config('DB_USER', default='user'), # --- МОЖЕТ БЫТЬ УДАЛЕНО ---
+        'PASSWORD': config('DB_PASSWORD', default=''), # --- МОЖЕТ БЫТЬ УДАЛЕНО ---
+        'HOST': config('DB_HOST', default='localhost'), # --- МОЖЕТ БЫТЬ УДАЛЕНО ---
+        'PORT': config('DB_PORT', default='5432'), # --- МОЖЕТ БЫТЬ УДАЛЕНО ---
     }
 }
 

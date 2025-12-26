@@ -5,22 +5,22 @@ from django.contrib.gis.measure import D
 from . import serializers
 from . import services
 from . import permissions
-from .models import Message, Point as PointModel
+from .models import GeoComment as CommentModel, GeoPoint as PointModel
 
-class PointCreateView(generics.CreateAPIView):
+class GeoPointCreateView(generics.CreateAPIView):
     """
-    Создание точки на карте.
-    POST /api/points/
+    Создание гео-точки.
+    POST /api/geopoints/
     """
-    serializer_class = serializers.PointSerializer
+    serializer_class = serializers.GeoPointSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         user = self.request.user
-        name = serializer.validated_data.get('name')
+        title = serializer.validated_data.get('title')
         description = serializer.validated_data.get('description')
-        latitude = self.request.data.get('latitude')
-        longitude = self.request.data.get('longitude')
+        latitude = serializer.validated_data.get('latitude')
+        longitude = serializer.validated_data.get('longitude')
 
         try:
             latitude = float(latitude)
@@ -29,8 +29,8 @@ class PointCreateView(generics.CreateAPIView):
             from rest_framework.exceptions import ValidationError
             raise ValidationError({'error': 'Широта и долгота должны быть числами.'})
 
-        services.create_point_service(
-            name=name,
+        services.create_geopoint_service(
+            title=title,
             description=description,
             latitude=latitude,
             longitude=longitude,
@@ -38,18 +38,18 @@ class PointCreateView(generics.CreateAPIView):
         )
 
 
-class MessageCreateView(generics.CreateAPIView):
+class GeoCommentCreateView(generics.CreateAPIView):
     """
-    Создание сообщения к заданной точке.
-    POST /api/points/messages/
+    Создание комментария к заданной точке.
+    POST /api/comments/
     """
-    serializer_class = serializers.MessageSerializer
+    serializer_class = serializers.GeoCommentSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         user = self.request.user
-        point_id = self.request.data.get('point')
-        text = serializer.validated_data.get('text')
+        point_id = serializer.validated_data.get('point_id')
+        content = serializer.validated_data.get('content')
 
         try:
             point_id = int(point_id)
@@ -57,66 +57,66 @@ class MessageCreateView(generics.CreateAPIView):
             from rest_framework.exceptions import ValidationError
             raise ValidationError({'error': 'ID точки должен быть числом.'})
 
-        services.create_message_service(
+        services.create_geocomment_service(
             point_id=point_id,
-            text=text,
+            content=content,
             author=user
         )
 
 
-class PointSearchView(generics.ListAPIView):
+class GeoPointSearchView(generics.ListAPIView):
     """
     Поиск точек в заданном радиусе.
-    GET /api/points/search/
-    Параметры: latitude, longitude, radius (км).
+    GET /api/geopoints/search/
+    Параметры: latitude, longitude, radius_km (км).
     """
-    serializer_class = serializers.PointSerializer
+    serializer_class = serializers.GeoPointSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         latitude = self.request.query_params.get('latitude')
         longitude = self.request.query_params.get('longitude')
-        radius = self.request.query_params.get('radius')
+        radius_km = self.request.query_params.get('radius_km')
 
-        if latitude is None or longitude is None or radius is None:
+        if latitude is None or longitude is None or radius_km is None:
             from rest_framework.exceptions import ValidationError
-            raise ValidationError({'error': 'Параметры latitude, longitude и radius обязательны.'})
+            raise ValidationError({'error': 'Параметры latitude, longitude и radius_km обязательны.'})
 
         try:
             latitude = float(latitude)
             longitude = float(longitude)
-            radius = float(radius)
+            radius_km = float(radius_km)
         except (TypeError, ValueError):
             from rest_framework.exceptions import ValidationError
-            raise ValidationError({'error': 'Параметры latitude, longitude и radius должны быть числами.'})
+            raise ValidationError({'error': 'Параметры latitude, longitude и radius_km должны быть числами.'})
 
-        return services.find_points_in_radius_service(latitude, longitude, radius)
+        return services.find_geopoints_in_radius_service(latitude, longitude, radius_km)
 
 
-class MessageSearchView(generics.ListAPIView):
+class GeoCommentSearchView(generics.ListAPIView):
     """
-    Поиск сообщений в заданном радиусе.
-    GET /api/messages/search/
-    Параметры: latitude, longitude, radius (км).
+    Поиск комментариев в заданном радиусе.
+    GET /api/comments/search/
+    Параметры: latitude, longitude, radius_km (км).
     """
-    serializer_class = serializers.MessageSerializer
+    serializer_class = serializers.GeoCommentSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         latitude = self.request.query_params.get('latitude')
         longitude = self.request.query_params.get('longitude')
-        radius = self.request.query_params.get('radius')
+        radius_km = self.request.query_params.get('radius_km')
 
-        if latitude is None or longitude is None or radius is None:
+        if latitude is None or longitude is None or radius_km is None:
             from rest_framework.exceptions import ValidationError
-            raise ValidationError({'error': 'Параметры latitude, longitude и radius обязательны.'})
+            raise ValidationError({'error': 'Параметры latitude, longitude и radius_km обязательны.'})
 
         try:
             latitude = float(latitude)
             longitude = float(longitude)
-            radius = float(radius)
+            radius_km = float(radius_km)
         except (TypeError, ValueError):
             from rest_framework.exceptions import ValidationError
-            raise ValidationError({'error': 'Параметры latitude, longitude и radius должны быть числами.'})
+            raise ValidationError({'error': 'Параметры latitude, longitude и radius_km должны быть числами.'})
 
-        return services.find_messages_in_radius_service(latitude, longitude, radius)
+        return services.find_geocomments_in_radius_service(latitude, longitude, radius_km)

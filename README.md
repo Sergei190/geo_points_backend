@@ -2,82 +2,96 @@
 
 ## Описание
 
-Это backend-приложение на Django, предоставляющее REST API для работы с географическими точками на карте. Приложение позволяет создавать точки, оставлять сообщения к ним и искать точки и сообщения в заданном радиусе от указанных координат. Всё API защищено аутентификацией.
+Backend-приложение на Django для работы с географическими точками на карте. Предоставляет REST API для создания точек, обмена сообщениями и поиска контента в заданном радиусе от указанных координат.
 
 ## Технический стек
 
-- Python 3.10+
-- Django 4+
-- Django REST Framework (DRF)
-- SQLite (для разработки)
-- GeoDjango (для работы с географическими данными)
+*   Python 3.10+
+*   Django 4+ / 5+
+*   Django REST Framework (DRF)
+*   PostgreSQL / PostGIS
+*   GeoDjango
+*   Django TestCase
+
+## Функционал
+
+*   **Создание точки на карте:** `POST /api/geopoints/`
+*   **Создание комментария к заданной точке:** `POST /api/comments/`
+*   **Поиск точек в заданном радиусе:** `GET /api/geopoints/search/` (параметры: `latitude`, `longitude`, `radius_km`)
+*   **Поиск комментариев в заданном радиусе:** `GET /api/comments/search/` (параметры: `latitude`, `longitude`, `radius_km`)
+*   **Безопасность:** Все эндпоинты защищены аутентификацией (`IsAuthenticated`).
 
 ## Установка и запуск
 
-### Локальный запуск (с SQLite)
-
-1.  Убедитесь, что у вас установлены Python 3.10+, `pip`, `virtualenv` (рекомендуется).
-2.  Клонируйте репозиторий:
+1.  **Клонирование репозитория:**
     ```bash
     git clone <URL_ВАШЕГО_РЕПОЗИТОРИЯ>
     cd geo_points_backend
     ```
-3.  Создайте и активируйте виртуальное окружение:
+
+2.  **Создание и активация виртуального окружения (рекомендуется):**
     ```bash
+    # Создание окружения (например, с помощью venv)
     python -m venv venv
-    source venv/bin/activate  # Linux/Mac
-    # или
-    venv\Scripts\activate  # Windows
+
+    # Активация (Windows)
+    venv\Scripts\activate
+    # Активация (Linux/Mac)
+    source venv/bin/activate
     ```
-4.  Установите зависимости:
+
+3.  **Установка зависимостей:**
     ```bash
     pip install -r requirements.txt
     ```
-5.  Установите системные зависимости для GeoDjango (Ubuntu/Debian):
-    ```bash
-    sudo apt-get install binutils gdal-bin libproj-dev libgeos-dev
-    # Для Windows: установка может отличаться, см. документацию GeoDjango.
-    ```
-6.  Создайте файл `.env` в корне проекта (пример уже в репозитории) и убедитесь, что переменные `DB_NAME` и т.д. не установлены, чтобы использовалась SQLite.
-7.  Выполните миграции:
+
+4.  **Настройка PostgreSQL:**
+    *   Установите PostgreSQL и PostGIS.
+    *   Создайте базу данных для разработки (например, `geo_points_dev_db`).
+    *   Подключитесь к созданной базе данных.
+    *   Выполните команду: `CREATE EXTENSION postgis;`.
+
+5.  **Настройка переменных окружения:**
+    *   Создайте файл `.env` в корне проекта.
+    *   Укажите настройки подключения к PostgreSQL (пример в `.env.example`):
+        ```env
+        DEV_DB_NAME=geo_points_dev_db
+        DEV_DB_USER=postgres
+        DEV_DB_PASSWORD=Ser19052001
+        DEV_DB_HOST=localhost
+        DEV_DB_PORT=5432
+
+        TEST_DB_NAME=geo_points_test_db
+        TEST_DB_USER=postgres
+        TEST_DB_PASSWORD=Ser19052001
+        TEST_DB_HOST=localhost
+        TEST_DB_PORT=5432
+        ```
+
+6.  **Применение миграций:**
     ```bash
     python manage.py migrate
     ```
-8.  Создайте суперпользователя (для доступа к админке и тестирования):
+
+7.  **(Опционально) Создание суперпользователя:**
     ```bash
     python manage.py createsuperuser
     ```
-9.  Запустите сервер разработки:
+
+8.  **Запуск сервера разработки:**
     ```bash
     python manage.py runserver
     ```
+
     Приложение будет доступно по адресу `http://127.0.0.1:8000/`.
 
-### Запуск с Docker
+## Запуск тестов
 
-1.  Убедитесь, что у вас установлены Docker и Docker Compose.
-2.  Следуйте шагам 1-5 из "Локального запуска", но не нужно устанавливать Python и pip локально.
-3.  Убедитесь, что в файле `.env` не установлены переменные `DB_NAME`, `DB_USER` и т.д., чтобы Docker Compose использовал SQLite.
-4.  Выполните команду:
+Для запуска тестов используется отдельная тестовая база данных PostgreSQL.
+
+1.  Убедитесь, что PostgreSQL запущен и в файле `.env` указаны настройки для тестовой базы данных (например, `TEST_DB_NAME=geo_points_test_db`).
+2.  Убедитесь, что расширение `postgis` установлено в тестовой базе данных.
+3.  Выполните команду:
     ```bash
-    docker-compose up --build
+    python manage.py test --settings=geo_points_project.settings.test_postgis
     ```
-    Приложение будет доступно по адресу `http://127.0.0.1:8000/`. Для остановки используйте `Ctrl+C`.
-
-## API Endpoints
-
-Все эндпоинты требуют аутентификации через сессию (SessionAuthentication) или токен (если будет добавлено).
-
-### 1. Создание точки
-
-- **URL**: `POST /api/points/`
-- **Headers**: `Content-Type: application/json`
-- **Auth Required**: Yes
-- **Body**:
-  ```json
-  {
-    "name": "Название точки",
-    "description": "Описание точки (опционально)",
-    "latitude": 55.7558,
-    "longitude": 37.6173
-  }

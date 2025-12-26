@@ -9,6 +9,8 @@ RUN apt-get update \
         gdal-bin \
         libproj-dev \
         libgeos-dev \
+        libpq-dev \
+        gcc \
         sqlite3 \
         libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -24,5 +26,3 @@ RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
 USER appuser
 
 EXPOSE 8000
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
