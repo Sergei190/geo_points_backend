@@ -29,21 +29,23 @@ Backend-приложение на Django для работы с географи
     cd geo_points_backend
     ```
 
-2.  **Создание и активация виртуального окружения (рекомендуется):**
-    ```bash
-    # Создание окружения (например, с помощью venv)
-    python -m venv venv
-
-    # Активация (Windows)
-    venv\Scripts\activate
-    # Активация (Linux/Mac)
-    source venv/bin/activate
-    ```
+2.  **Создание и активация Conda-окружения (рекомендуется):**
+    *   Откройте Anaconda Prompt (или терминал, если conda в PATH).
+    *   Создайте новое окружение (замените `myenv` на желаемое имя):
+        ```bash
+        conda create -n geo_points_env python=3.10
+        ```
+    *   Активируйте окружение:
+        ```bash
+        conda activate geo_points_env
+        ```
 
 3.  **Установка зависимостей:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+    *   Убедитесь, что вы находитесь в активированном окружении и в директории проекта.
+    *   Установите зависимости из `requirements.txt`:
+        ```bash
+        pip install -r requirements.txt
+        ```
 
 4.  **Настройка PostgreSQL:**
     *   Установите PostgreSQL и PostGIS.
@@ -53,8 +55,9 @@ Backend-приложение на Django для работы с географи
 
 5.  **Настройка переменных окружения:**
     *   Создайте файл `.env` в корне проекта.
-    *   Укажите настройки подключения к PostgreSQL (пример в `.env.example`):
+    *   Укажите настройки подключения к PostgreSQL и секретный ключ (пример в `.env.example`):
         ```env
+        DJANGO_SECRET_KEY=ваш_секретный_ключ
         DEV_DB_NAME=geo_points_dev_db
         DEV_DB_USER=postgres
         DEV_DB_PASSWORD=Ser19052001
@@ -69,16 +72,19 @@ Backend-приложение на Django для работы с географи
         ```
 
 6.  **Применение миграций:**
+    *   Убедитесь, что ваше Conda-окружение активировано.
     ```bash
     python manage.py migrate
     ```
 
 7.  **(Опционально) Создание суперпользователя:**
+    *   Убедитесь, что ваше Conda-окружение активировано.
     ```bash
     python manage.py createsuperuser
     ```
 
 8.  **Запуск сервера разработки:**
+    *   Убедитесь, что ваше Conda-окружение активировано.
     ```bash
     python manage.py runserver
     ```
@@ -91,7 +97,8 @@ Backend-приложение на Django для работы с географи
 
 1.  Убедитесь, что PostgreSQL запущен и в файле `.env` указаны настройки для тестовой базы данных (например, `TEST_DB_NAME=geo_points_test_db`).
 2.  Убедитесь, что расширение `postgis` установлено в тестовой базе данных.
-3.  Выполните команду:
+3.  Убедитесь, что ваше Conda-окружение активировано.
+4.  Выполните команду:
     ```bash
     python manage.py test --settings=geo_points_project.settings.test_postgis
     ```
